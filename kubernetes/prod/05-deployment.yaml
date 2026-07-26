@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prod-mshopping-deployment
+  namespace: prod-mshopping
+  labels:
+    app: mshopping
+    env: prod-mshopping
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 100%
+  selector:
+    matchLabels:
+      app: mshopping
+      env: prod-mshopping
+  template:
+    metadata:
+      labels:
+        app: mshopping
+        env: prod-mshopping
+    spec:
+      serviceAccountName: prod-mshopping-service-sa
+      containers:
+        - name: mshopping
+          image: 279078306727.dkr.ecr.ap-south-1.amazonaws.com/mshopping:<latest>
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 200m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          ports:
+            - name: api
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /flights
+              port: 8080
+            initialDelaySeconds: 70
+            periodSeconds: 10
+            failureThreshold: 5
+
+          livenessProbe:
+            httpGet:
+              path: /flights
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 20
+
+          volumeMounts:
+            - name: application-config
+              mountPath: /app/config
+      volumes:
+        - name: application-config
+          configMap:
+            name: prod-mshopping-deployment-application-config

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dev-mshopping-deployment-application-config
+  namespace: dev-mshopping
+  labels:
+    env: dev-mshopping
+    app: mshopping
+    layer: frontend
+data:
+  application.properties: |-
+    DB_URL=jdbc:mysql://dummy-db.dev.local:3306/mshopping
+    DB_USERNAME=dev_user
+    DB_PASSWORD=dev_password124
+
+    KAFKA_URL=dummy-kafka.dev.local:9092

@@ -1,0 +1,17 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: prod-mshopping-hpa
+  namespace: prod-mshopping
+  labels:
+    env: prod-mshopping
+    app: mshopping
+    layer: frontend
+spec:
+  maxReplicas: 10
+  minReplicas: 2
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: prod-mshopping-deployment
+  targetCPUUtilizationPercentage: 80
